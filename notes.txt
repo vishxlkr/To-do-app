@@ -3,3 +3,8 @@ router -> process (to handler)
 handler -> make query to the repository            //  error
 postgreSQL                                      // data or entity error
 
+
+
+project folder setup 
+
+mkdir -p cmd/api internal/config internal/database internal/handlers internal/middleware internal/models internal/repository migrations
