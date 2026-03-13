@@ -2,7 +2,7 @@ client
 router -> process (to handler)                          
 handler -> make query to the repository            //  error
 postgreSQL                                      // data or entity error
-
+repository makes sql queries to the db
 
 
 project folder setup -
