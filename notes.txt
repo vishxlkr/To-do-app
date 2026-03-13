@@ -5,6 +5,26 @@ postgreSQL                                      // data or entity error
 
 
 
-project folder setup 
-
+project folder setup -
 mkdir -p cmd/api internal/config internal/database internal/handlers internal/middleware internal/models internal/repository migrations
+
+go init
+go mod  init todo
+
+
+install gin
+ go get -u github.com/gin-gonic/gin
+
+ install postgreSQL driver
+ go get github.com/jackc/pgx/v5
+
+ cli tool for postgreSQL
+ go install -tags 'postgres' github.com/golang-migrate/migrate/v4/cmd/migrate@latest
+
+ install jwt
+ go get -u github.com/golang-jwt/jwt/v5
+
+ bcrpt
+ go get golang.org/x/crypto/bcrypt
+
+ dotenv
