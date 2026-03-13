@@ -34,8 +34,9 @@ func main() {
 
 	router.GET("/", func(c *gin.Context) {
 		c.JSON(200, gin.H{
-			"message": "Todo API is running",
-			"success": true,
+			"message":  "Todo API is running",
+			"success":  true,
+			"database": "connected",
 		})
 	})
 
