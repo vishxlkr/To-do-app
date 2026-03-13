@@ -32,3 +32,35 @@ install gin
 
 add missing dependencies
  go mod tidy
+
+
+
+ install migration
+
+ create migration table
+ migrate create -ext sql -dir migrations -seq create_todos_table
+
+
+
+
+
+
+
+
+
+
+
+basic server
+
+config file 
+with got env
+
+
+connnection with database
+
+migration
+
+
+
+
+
