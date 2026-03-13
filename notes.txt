@@ -28,3 +28,7 @@ install gin
  go get golang.org/x/crypto/bcrypt
 
  dotenv
+ go get github.com/joho/godotenv
+
+add missing dependencies
+ go mod tidy
