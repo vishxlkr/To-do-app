@@ -1,6 +1,6 @@
 client
 router -> process (to handler)                          
-handler -> make query to the repository            //  error
+handler ->first it recognize what kind of request it got from client make query to the repository            //  error
 postgreSQL                                      // data or entity error
 repository makes sql queries to the db
 
