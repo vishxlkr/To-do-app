@@ -7,3 +7,6 @@ type User struct {
 	CreatedAt string `json:"created_at" db:"created_at"`
 	UpdatedAt string `json:"updated_at" db:"updated_at"`
 }
+
+// json:"email"  → used when sending response in API  ----> use email , not Email
+// db:"email"    → used when reading from database	  ----> use email , not Email
