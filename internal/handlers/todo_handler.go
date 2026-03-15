@@ -1,10 +1,7 @@
 package handlers
 
 import (
-	"context"
 	"net/http"
-	"time"
-	"todo/internal/models"
 	"todo/internal/repository"
 
 	"github.com/gin-gonic/gin"
@@ -45,13 +42,18 @@ func CreateTodoHandler(pool *pgxpool.Pool) gin.HandlerFunc {
 
 }
 
-func GetAllTodos(pool *pgxpool.Pool) ([]models.Todo, error) {
+func GetAllTodosHandler(pool *pgxpool.Pool) gin.HandlerFunc {
 
-	var ctx context.Context
-	var cancel context.CancelFunc
+	return func(c *gin.Context) {
+		todos, err := repository.GetAllTodos(pool)
 
-	ctx, cancel = context.WithTimeout(context.Background(), 5*time.Second)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"error": err.Error(),
+			})
+		}
 
-	defer cancel()
+		c.JSON(http.StatusOK, todos)
 
+	}
 }

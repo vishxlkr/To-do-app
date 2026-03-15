@@ -17,7 +17,7 @@ func CreateTodo(pool *pgxpool.Pool, title string, completed bool) (*models.Todo,
 	defer cancel()
 
 	var query string = `
-		INSERT INTO todos_user (title , completed)
+		INSERT INTO todos (title , completed)
 		VALUES ($1,$2)
 		RETURNING id , title , completed, created_at , updated_at
 
@@ -50,35 +50,44 @@ func GetAllTodos(pool *pgxpool.Pool) ([]models.Todo, error) {
 	defer cancel()
 
 	var query string = `
-		SELECT id, title, completed, created_at, updated_at, user_id
+		SELECT id, title, completed, created_at, updated_at
 		FROM todos
 		
 		ORDER BY created_at DESC
 	`
 
-	var rows , err =  pool.Query(ctx, query)
+	var rows, err = pool.Query(ctx, query)
 
-	if err!= nil {
+	if err != nil {
 		return nil, err
 	}
 
-	var todos []models.Todo  = []models.Todo{}
+	defer rows.Close()
 
-	for rows.Next(){
+	var todos []models.Todo = []models.Todo{}
+
+	for rows.Next() {
 		var todo models.Todo
 
-		// its takes the row values and put it into todo variable 
-		var err = rows.scan(
+		// its takes the row values and put it into todo variable
+		var err = rows.Scan(
 			&todo.ID,
-			&todo.Title,&todo.Completed,&todo.CreatedAt, &todo.UpdatedAt
+			&todo.Title,
+			&todo.Completed,
+			&todo.CreatedAt,
+			&todo.UpdatedAt,
 		)
 
-		if err!= nil {
-			return nil , err
+		if err != nil {
+			return nil, err
 		}
 
 		todos = append(todos, todo)
 	}
 
-	var err
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return todos, nil
 }
