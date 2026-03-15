@@ -17,7 +17,7 @@ type CreateTodoInput struct {
 }
 
 type UpdateToDoInput struct {
-	Title string `json:"title" `
+	Title *string `json:"title" `
 	// we are using the pointer bool to get the already present value in the todo
 	// &true --------> set completed as -> true
 	// &false -------> set completed as -> false
@@ -131,20 +131,14 @@ func UpdateToDoHandler(pool *pgxpool.Pool) gin.HandlerFunc {
 			return
 		}
 
-		if input.Title == "" && input.Completed == nil {
+		if input.Title == nil && input.Completed == nil {
 			c.JSON(http.StatusBadRequest, gin.H{
 				"error": "Atleast one field (title or completed) must be provided",
 			})
 			return
 		}
 
-		var completed bool
-		// if completed is not provided -----> this will not run----> and by default it will be false
-		if input.Completed != nil {
-			completed = *input.Completed
-		}
-
-		todo, err := repository.UpdateToDo(pool, id, input.Title, completed)
+		existing, err := repository.GetToDoByID(pool, id)
 
 		if err != nil {
 			if err == pgx.ErrNoRows {
@@ -158,6 +152,20 @@ func UpdateToDoHandler(pool *pgxpool.Pool) gin.HandlerFunc {
 			})
 			return
 		}
+
+		title := existing.Title
+		if input.Title != nil {
+			title = *input.Title
+
+		}
+
+		completed := existing.Completed
+		// if completed is not provided -----> this will not run----> and by default it will be false
+		if input.Completed != nil {
+			completed = *input.Completed
+		}
+
+		todo, err := repository.UpdateToDo(pool, id, title, completed)
 
 		c.JSON(http.StatusOK, todo)
 	}
