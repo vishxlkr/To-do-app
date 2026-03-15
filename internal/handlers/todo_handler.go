@@ -21,7 +21,7 @@ type UpdateToDoInput struct {
 	// we are using the pointer bool to get the already present value in the todo
 	// &true --------> set completed as -> true
 	// &false -------> set completed as -> false
-	// nil ----------> set completed as -> not provided -> use default value false
+	// nil ----------> set completed as -> not provided -
 	Completed *bool `json:"completed"`
 }
 
@@ -110,6 +110,56 @@ func GetToDoByIDHandler(pool *pgxpool.Pool) gin.HandlerFunc {
 func UpdateToDoHandler(pool *pgxpool.Pool) gin.HandlerFunc {
 
 	return func(c *gin.Context) {
+		idStr := c.Param("id")
 
+		id, err := strconv.Atoi(idStr)
+
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"error": "Invalid todo ID",
+			})
+			return
+		}
+
+		var input UpdateToDoInput
+
+		if err = c.ShouldBindJSON(&input); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"error": err.Error(),
+			})
+
+			return
+		}
+
+		if input.Title == "" && input.Completed == nil {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"error": "Atleast one field (title or completed) must be provided",
+			})
+			return
+		}
+
+		var completed bool
+		// if completed is not provided -----> this will not run----> and by default it will be false
+		if input.Completed != nil {
+			completed = *input.Completed
+		}
+
+		todo, err := repository.UpdateToDo(pool, id, input.Title, completed)
+
+		if err != nil {
+			if err == pgx.ErrNoRows {
+				c.JSON(http.StatusNotFound, gin.H{
+					"error": "Todo not found",
+				})
+				return
+			}
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"error": err.Error(),
+			})
+			return
+		}
+
+		c.JSON(http.StatusOK, todo)
 	}
+
 }

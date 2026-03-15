@@ -44,6 +44,7 @@ func main() {
 	router.POST("/todos", handlers.CreateTodoHandler(pool))
 	router.GET("/todos", handlers.GetAllTodosHandler(pool))
 	router.GET("/todos/:id", handlers.GetToDoByIDHandler(pool))
+	router.PUT("/todos/:id", handlers.UpdateToDoHandler(pool)) // body will also be sent
 
 	router.Run(":" + cfg.Port) // this start the server at given port
 }
