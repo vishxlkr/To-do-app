@@ -47,5 +47,7 @@ func main() {
 	router.PUT("/todos/:id", handlers.UpdateToDoHandler(pool)) // body will also be sent
 	router.DELETE("/todos/:id", handlers.DeleteToDoHandler(pool))
 
+	router.POST("/auth/register", handlers.CreateUserHandler(pool))
+
 	router.Run(":" + cfg.Port) // this start the server at given port
 }
