@@ -28,6 +28,19 @@ type UpdateToDoInput struct {
 func CreateTodoHandler(pool *pgxpool.Pool) gin.HandlerFunc {
 
 	return func(c *gin.Context) {
+
+		userIDInterface, exists := c.Get("user_id")
+
+		if !exists {
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"error": "user+id is not found in context.",
+			})
+		}
+
+		userID := userIDInterface.(string)
+
+		//////////////////////////////////////////////////////////////////
+
 		var input CreateTodoInput
 
 		// parse json body and converts it into go struct and save it in input variable
@@ -39,7 +52,7 @@ func CreateTodoHandler(pool *pgxpool.Pool) gin.HandlerFunc {
 		}
 
 		// if there is no error then this is save it to databse (repository is used)
-		todo, err := repository.CreateTodo(pool, input.Title, input.Completed)
+		todo, err := repository.CreateTodo(pool, input.Title, input.Completed, userID)
 
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{
@@ -57,7 +70,18 @@ func CreateTodoHandler(pool *pgxpool.Pool) gin.HandlerFunc {
 func GetAllTodosHandler(pool *pgxpool.Pool) gin.HandlerFunc {
 
 	return func(c *gin.Context) {
-		todos, err := repository.GetAllTodos(pool)
+		userIDInterface, exists := c.Get("user_id")
+
+		if !exists {
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"error": "user+id is not found in context.",
+			})
+		}
+
+		userID := userIDInterface.(string)
+
+		//////////////////////////////////////////////////////
+		todos, err := repository.GetAllTodos(pool, userID)
 
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{
@@ -73,6 +97,17 @@ func GetAllTodosHandler(pool *pgxpool.Pool) gin.HandlerFunc {
 func GetToDoByIDHandler(pool *pgxpool.Pool) gin.HandlerFunc {
 
 	return func(c *gin.Context) {
+		userIDInterface, exists := c.Get("user_id")
+
+		if !exists {
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"error": "user+id is not found in context.",
+			})
+		}
+
+		userID := userIDInterface.(string)
+
+		////////////////////////////////////////////
 		idStr := c.Param("id")
 		// "2" ------> 2, nil
 		// "a" ------> 0 , error (invalid syntax)
@@ -86,7 +121,7 @@ func GetToDoByIDHandler(pool *pgxpool.Pool) gin.HandlerFunc {
 			return
 		}
 
-		todo, err := repository.GetToDoByID(pool, id)
+		todo, err := repository.GetToDoByID(pool, id, userID)
 
 		if err != nil {
 			if err == pgx.ErrNoRows {
@@ -110,6 +145,18 @@ func GetToDoByIDHandler(pool *pgxpool.Pool) gin.HandlerFunc {
 func UpdateToDoHandler(pool *pgxpool.Pool) gin.HandlerFunc {
 
 	return func(c *gin.Context) {
+
+		userIDInterface, exists := c.Get("user_id")
+
+		if !exists {
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"error": "user+id is not found in context.",
+			})
+		}
+
+		userID := userIDInterface.(string)
+
+		////////////////////////////////////////////////////
 		idStr := c.Param("id")
 
 		id, err := strconv.Atoi(idStr)
@@ -138,7 +185,7 @@ func UpdateToDoHandler(pool *pgxpool.Pool) gin.HandlerFunc {
 			return
 		}
 
-		existing, err := repository.GetToDoByID(pool, id)
+		existing, err := repository.GetToDoByID(pool, id, userID)
 
 		if err != nil {
 			if err == pgx.ErrNoRows {
@@ -165,7 +212,7 @@ func UpdateToDoHandler(pool *pgxpool.Pool) gin.HandlerFunc {
 			completed = *input.Completed
 		}
 
-		todo, err := repository.UpdateToDo(pool, id, title, completed)
+		todo, err := repository.UpdateToDo(pool, id, title, completed, userID)
 
 		c.JSON(http.StatusOK, todo)
 	}
@@ -175,6 +222,18 @@ func UpdateToDoHandler(pool *pgxpool.Pool) gin.HandlerFunc {
 func DeleteToDoHandler(pool *pgxpool.Pool) gin.HandlerFunc {
 
 	return func(c *gin.Context) {
+
+		userIDInterface, exists := c.Get("user_id")
+
+		if !exists {
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"error": "user+id is not found in context.",
+			})
+		}
+
+		userID := userIDInterface.(string)
+
+		//////////////////////////////////////////////////
 		idStr := c.Param("id")
 
 		id, err := strconv.Atoi(idStr)
@@ -186,7 +245,7 @@ func DeleteToDoHandler(pool *pgxpool.Pool) gin.HandlerFunc {
 			return
 		}
 
-		err = repository.DeleteToDo(pool, id)
+		err = repository.DeleteToDo(pool, id, userID)
 
 		if err != nil {
 			if err.Error() == "todoTodo with id "+idStr+" not found" {

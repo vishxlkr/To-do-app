@@ -47,14 +47,15 @@ func main() {
 	router.POST("/auth/login", handlers.LoginHandler(pool, cfg))
 
 	protected := router.Group("/todos")
-
+	// protected route is passed from middleware
 	protected.Use(middleware.AuthMiddleware(cfg))
-
-	protected.POST("", handlers.CreateTodoHandler(pool))
-	protected.GET("", handlers.GetAllTodosHandler(pool))
-	protected.GET("/:id", handlers.GetToDoByIDHandler(pool))
-	protected.PUT("/:id", handlers.UpdateToDoHandler(pool)) // body will also be sent
-	protected.DELETE("/:id", handlers.DeleteToDoHandler(pool))
+	{
+		protected.POST("", handlers.CreateTodoHandler(pool))
+		protected.GET("", handlers.GetAllTodosHandler(pool))
+		protected.GET("/:id", handlers.GetToDoByIDHandler(pool))
+		protected.PUT("/:id", handlers.UpdateToDoHandler(pool)) // body will also be sent
+		protected.DELETE("/:id", handlers.DeleteToDoHandler(pool))
+	}
 
 	// middleware test route
 	router.GET("/protected-test", middleware.AuthMiddleware(cfg), handlers.TestProtectedHandler())
