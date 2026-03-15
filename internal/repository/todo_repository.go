@@ -104,7 +104,7 @@ func GetToDoByID(pool *pgxpool.Pool, id int, userID string) (*models.Todo, error
 	defer cancel()
 
 	var query string = `
-		SELECT id, title, completed, created_at, updated_at
+		SELECT id, title, completed, created_at, updated_at, user_id
 		FROM todos
 		WHERE id = $1 and user_id = $2
 	`
