@@ -95,7 +95,7 @@ func GetAllTodos(pool *pgxpool.Pool, userID string) ([]models.Todo, error) {
 	return todos, nil
 }
 
-func GetToDoByID(pool *pgxpool.Pool, id int , userID string) (*models.Todo, error) {
+func GetToDoByID(pool *pgxpool.Pool, id int, userID string) (*models.Todo, error) {
 	var ctx context.Context
 	var cancel context.CancelFunc
 
@@ -117,7 +117,7 @@ func GetToDoByID(pool *pgxpool.Pool, id int , userID string) (*models.Todo, erro
 		&todo.Completed,
 		&todo.CreatedAt,
 		&todo.UpdatedAt,
-		&todo.UserID
+		&todo.UserID,
 	)
 
 	if err != nil {
@@ -128,7 +128,7 @@ func GetToDoByID(pool *pgxpool.Pool, id int , userID string) (*models.Todo, erro
 
 }
 
-func UpdateToDo(pool *pgxpool.Pool, id int, title string, completed bool , userID string) (*models.Todo, error) {
+func UpdateToDo(pool *pgxpool.Pool, id int, title string, completed bool, userID string) (*models.Todo, error) {
 	var ctx context.Context
 	var cancel context.CancelFunc
 
@@ -175,7 +175,7 @@ func DeleteToDo(pool *pgxpool.Pool, id int, userID string) error {
 		WHERE ID = $1 and user_id = $2
 	`
 
-	commandTag, err := pool.Exec(ctx, query, id , userID)
+	commandTag, err := pool.Exec(ctx, query, id, userID)
 
 	if err != nil {
 		return err
